@@ -6,7 +6,7 @@ export default function Home() {
     <>
     <div className="w-full h-[60px] bg-gray-800 flex items-center justify-between">
       <p className="text-white ml-10 text-xl">Cricket Score</p>
-      <p className="text-red-500 mr-10">Logout</p>
+      <button className="text-red-500 mr-10">Logout</button>
     </div>
     <div className="flex flex-row w-full h-screen items-center justify-center gap-2 p-2">
       <FeedPanel/>
