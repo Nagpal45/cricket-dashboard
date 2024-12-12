@@ -1,13 +1,15 @@
 "use client";
 import { Match } from "@/app/types";
+import apiRequest from "@/lib/apiRequest";
 import Image from "next/image";
 import { useState } from "react";
 
 interface FeedPanelProps {
   match: Match | undefined;
+  setChange: (value: boolean) => void;
 }
 
-const FeedPanel = ({ match }: FeedPanelProps) => {
+const FeedPanel = ({ match, setChange }: FeedPanelProps) => {
   const [checked, setChecked] = useState(false);
 
   const ballOptions = [
@@ -46,6 +48,26 @@ const FeedPanel = ({ match }: FeedPanelProps) => {
     { name: "Wicket Confirm", color: "bg-red-700" },
   ];
 
+
+
+  const handleBatsmanChange = async (value: string) => {
+    console.log(match?.id);
+    
+    await apiRequest.put("/match/inningBatsman", {
+      batsmanId: value,
+      matchId: match?.id,
+    });
+    setChange(true);
+  };
+
+  const handleBowlerChange = async (value: string) => {
+    await apiRequest.put("/match/inningBowlers", {
+      bowlerId: value,
+      matchId: match?.id,
+    });
+    setChange(true);
+  };
+
   return (
     <div className="w-full h-full rounded-lg bg-gray-200/50 border-2 py-1 px-3">
       <div className="w-full flex flex-row gap-5 items-center">
@@ -56,10 +78,11 @@ const FeedPanel = ({ match }: FeedPanelProps) => {
           <select
             name="striker"
             className="w-[315px] h-[40px] border border-gray-500 rounded-md"
+            onChange={(e) => handleBatsmanChange(e.target.value)}
           >
-            <option disabled>Select Batsman</option>
+            <option>Select Batsman</option>
             {match?.teamAPlayers.map((player, index) => (
-              <option key={index}>{player.name}</option>
+              <option key={index} value={player._id}>{player.name}</option>
             ))}
           </select>
         </div>
@@ -77,10 +100,11 @@ const FeedPanel = ({ match }: FeedPanelProps) => {
           <select
             name="nonStriker"
             className="w-[315px] h-[40px] border border-gray-500 rounded-md"
+            onChange={(e) => handleBatsmanChange(e.target.value)}
           >
-            <option disabled>Select Batsman</option>
+            <option>Select Batsman</option>
             {match?.teamAPlayers.map((player, index) => (
-              <option key={index}>{player.name}</option>
+              <option key={index} value={player._id}>{player.name}</option>
             ))}
           </select>
         </div>
@@ -91,10 +115,11 @@ const FeedPanel = ({ match }: FeedPanelProps) => {
           <select
             name="bowler"
             className="w-[315px] h-[40px] border border-gray-500 rounded-md"
+            onChange={(e) => handleBowlerChange(e.target.value)}
           >
-            <option disabled>Select Bowler</option>
+            <option>Select Bowler</option>
             {match?.teamBPlayers.map((player, index) => (
-              <option key={index}>{player.name}</option>
+              <option key={index} value={player._id}>{player.name}</option>
             ))}
           </select>
         </div>

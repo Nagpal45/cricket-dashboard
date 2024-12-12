@@ -7,6 +7,7 @@ const router = Router();
 
 router.get("/", async (req, res) => {
     const latestMatch = await Match.find().sort({ createdAt: -1 }).limit(1);
+    const id = latestMatch[0]._id;
     const teamA = await Team.findById(latestMatch[0].teamA);
     const teamB = await Team.findById(latestMatch[0].teamB);
     const inningBowlersIds = latestMatch[0].inningBowlers.slice(-2);
@@ -17,8 +18,34 @@ router.get("/", async (req, res) => {
     const runs = ballbyball.map((ball) => ball.runs);
     const teamAPlayers = await Player.find({ team: teamA?._id });
     const teamBPlayers = await Player.find({ team: teamB?._id });
-    res.json({ teamA, teamB, inningBowlers, inningBatsman, ballbyball, runs, teamAPlayers, teamBPlayers });
+    res.json({id, teamA, teamB, inningBowlers, inningBatsman, ballbyball, runs, teamAPlayers, teamBPlayers });
 });
+
+router.put("/inningBowlers", async (req, res) => {
+    const { bowlerId, matchId } = req.body;
+    const match = await Match.findById(matchId);
+    if(match){
+        match.inningBowlers.push(bowlerId);
+        await match.save();
+        res.json({ message: "Bowler added" });
+    } else {
+        res.status(404).json({ message: "Match not found" });
+    }
+}
+);
+
+router.put("/inningBatsman", async (req, res) => {
+    const { batsmanId, matchId } = req.body;
+    const match = await Match.findById(matchId);
+    if(match){
+        match.inningBatsman.push(batsmanId);
+        await match.save();
+        res.json({ message: "Batsman added" });
+    } else {
+        res.status(404).json({ message: "Match not found" });
+    }
+}
+);
 
 router.post("/", async (req, res) => {
     const { teamA, teamB} = req.body;

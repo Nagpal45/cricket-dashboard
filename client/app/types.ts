@@ -6,6 +6,7 @@ export interface Team {
  }
  
  export interface Player {
+    _id: string | number | readonly string[] | undefined;
     name: string;
     team: string;
     role: string;
@@ -23,6 +24,7 @@ export interface Team {
  }
  
  export interface Match {
+    id: string;
     teamA: Team;
     teamB: Team;
     inningBowlers: Player[];
