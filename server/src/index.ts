@@ -33,7 +33,7 @@ mongoose.connect(mongoUri).then(() => {
     console.log('Database connection failed. Error: ', error);
 })
 
-const io = new Server({
+export const io = new Server({
     cors: {
       origin: "http://localhost:3000",
     },
@@ -43,10 +43,6 @@ const io = new Server({
   
 io.on("connection", (socket) => {
     console.log("User connected");
-
-    socket.on("hello", () => {
-      console.log("Hello from client");
-    });
 
     socket.on("disconnect", () => {
       console.log("User disconnected");

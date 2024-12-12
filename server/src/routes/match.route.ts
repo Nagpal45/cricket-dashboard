@@ -2,6 +2,7 @@ import {Router} from "express";
 import Match from "../models/Match";
 import Team from "../models/Team";
 import Player from "../models/Player";
+import { io } from "../index";
 
 const router = Router();
 
@@ -29,6 +30,8 @@ router.put("/inningBowlers", async (req, res) => {
     if(match){
         match.inningBowlers.push(bowlerId);
         await match.save();
+        const inningBowlersUpdated = await Player.find({ _id: { $in: match.inningBowlers.slice(-2) } });
+        io.emit("updateData", { inningBowlers: inningBowlersUpdated });
         res.json({ message: "Bowler added" });
     } else {
         res.status(404).json({ message: "Match not found" });
@@ -42,6 +45,8 @@ router.put("/inningStriker", async (req, res) => {
     if(match){
         match.inningStriker = batsmanId;
         await match.save();
+        const striker = await Player.findById(batsmanId);
+        io.emit("updateData", { inningStriker: striker });
         res.json({ message: "Striker updated" });
     } else {
         res.status(404).json({ message: "Match not found" });
@@ -55,6 +60,8 @@ router.put("/inningNonStriker", async (req, res) => {
     if(match){
         match.inningNonStriker = batsmanId;
         await match.save();
+        const nonStriker = await Player.findById(batsmanId);
+        io.emit("updateData", { inningNonStriker: nonStriker });
         res.json({ message: "Non Striker updated" });
     } else {
         res.status(404).json({ message: "Match not found" });
@@ -70,6 +77,7 @@ router.put("/updateScore", async (req, res) => {
     const batsmanName = batsman?.name;
     const bowlerName = bowler?.name;
     const team = await Team.findById(teamId);
+
     if(match){
         if(team){
             team.totalScore += run;
@@ -97,7 +105,7 @@ router.put("/updateScore", async (req, res) => {
             bowler.oversBowled = bowler.oversBowled + 0.1;
             await bowler.save();
             
-            match.ballbyball.push({ ball: bowler.oversBowled, runs: run, description: `${batsmanName} scores ${run} runs against ${bowlerName}` });
+            match.ballbyball.push({ ball: bowler.oversBowled, runs: run, description: `${bowlerName} to ${batsmanName}: ${run} runs` });
         }
 
 
@@ -108,6 +116,14 @@ router.put("/updateScore", async (req, res) => {
         }
 
         await match.save();
+
+        const ballbyball = match.ballbyball.reverse();
+        const runs = ballbyball.map((ball) => ball.runs);
+        const inningStriker = await Player.findById(match.inningStriker);
+        const inningNonStriker = await Player.findById(match.inningNonStriker);
+        const inningBowlers = await Player.find({ _id: { $in: match.inningBowlers.slice(-2) } });
+        io.emit("updateData", { ballbyball, runs, inningStriker, inningNonStriker , inningBowlers, teamA: team });
+
         res.json({ message: "Score updated" });
     } else {
         res.status(404).json({ message: "Match not found" });

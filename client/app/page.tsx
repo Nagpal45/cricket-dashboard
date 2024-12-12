@@ -23,6 +23,21 @@ export default function Home() {
         fetchMatch();
     }, []);
 
+    useEffect(() => {
+      if (socket) {
+        socket.on('updateData', (data) => {
+          setMatch((prevMatch) => ({
+            ...prevMatch,
+            ...data,
+          }));
+          console.log(data);
+          
+        });
+      }
+    }, [socket]);
+    
+    
+
   return (
     <>
       <Navbar />

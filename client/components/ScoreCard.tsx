@@ -83,13 +83,13 @@ const ScoreCard = ({match} : ScoreCardPanelProps) => {
             </tr>
             </thead>
             <tbody>
-            {match?.inningBowlers.map((bowler, index) => (
+            {match?.inningBowlers.slice(-2).map((bowler, index) => (
                 <tr key={index}>
-                    <td>{bowler.name}</td>
-                    <td>{bowler.oversBowled.toFixed(1)}</td>
+                    <td>{bowler?.name}</td>
+                    <td>{bowler?.oversBowled?.toFixed(1)}</td>
                     <td>0</td>
-                    <td>{bowler.runsConceded}</td>
-                    <td>{bowler.wicketsTaken}</td>
+                    <td>{bowler?.runsConceded}</td>
+                    <td>{bowler?.wicketsTaken}</td>
                 </tr>
             ))}
             </tbody>

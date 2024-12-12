@@ -22,8 +22,8 @@ const FeedPanel = ({ match }: FeedPanelProps) => {
     { name: 1, color: "bg-cyan-950" },
     { name: "Wicket", color: "bg-red-700" },
     { name: 2, color: "bg-teal-600" },
-    { name: 4, color: "bg-emerald-200" },
-    { name: 6, color: "bg-gray-400" },
+    { name: 4, color: "bg-yellow-500" },
+    { name: 6, color: "bg-green-400" },
   ];
   const decisionOptions1 = [
     { name: "Bowler Stop", color: "bg-purple-800" },
@@ -169,7 +169,7 @@ const FeedPanel = ({ match }: FeedPanelProps) => {
           {runOptions.map((option, index) => (
             <button
               key={index}
-              className={`m-1 rounded-lg w-[32.2%] ${option.color}`}
+              className={`m-1 rounded-lg w-[32.2%] ${option.color} hover:opacity-80`}
               onClick={() => typeof option.name === 'number' && setRun(option.name)}
             >
               {option.name}
