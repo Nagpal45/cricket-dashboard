@@ -1,4 +1,5 @@
 "use client"
+import apiRequest from "@/lib/apiRequest"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
@@ -11,20 +12,12 @@ const Register = () => {
     const formData = {
       username: (form[0] as HTMLInputElement).value,
       email: (form[1] as HTMLInputElement).value,
-      password: (form[2] as HTMLInputElement).value
+      password: (form[2] as HTMLInputElement).value,
+      secretKey: (form[3] as HTMLInputElement).value
     }
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      })
-      if (!response.ok) {
-        throw new Error('Registration failed')
-      }
-      router.push('/productList')
+      await apiRequest.post('/auth/register', formData)
+      router.push('/login')
     } catch (error) {
       console.error(error)
     }
