@@ -6,11 +6,11 @@ import { useState } from "react";
 
 interface FeedPanelProps {
   match: Match | undefined;
-  setChange: (value: boolean) => void;
 }
 
-const FeedPanel = ({ match, setChange }: FeedPanelProps) => {
+const FeedPanel = ({ match }: FeedPanelProps) => {
   const [checked, setChecked] = useState(false);
+  const[run, setRun] = useState(0);
 
   const ballOptions = [
     { name: "Ball Start", color: "bg-green-600" },
@@ -48,6 +48,16 @@ const FeedPanel = ({ match, setChange }: FeedPanelProps) => {
     { name: "Wicket Confirm", color: "bg-red-700" },
   ];
 
+  const handleUpdate = async () => {
+    const response = await apiRequest.put("/match/updateScore", {
+      matchId: match?.id,
+      run: run,
+      batsmanId: match?.inningBatsman[1],
+      bowlerId: match?.inningBowlers[1],
+      teamId: match?.teamA,
+    });
+    console.log(response.data);
+  };
 
 
   const handleBatsmanChange = async (value: string) => {
@@ -57,7 +67,6 @@ const FeedPanel = ({ match, setChange }: FeedPanelProps) => {
       batsmanId: value,
       matchId: match?.id,
     });
-    setChange(true);
   };
 
   const handleBowlerChange = async (value: string) => {
@@ -65,7 +74,6 @@ const FeedPanel = ({ match, setChange }: FeedPanelProps) => {
       bowlerId: value,
       matchId: match?.id,
     });
-    setChange(true);
   };
 
   return (
@@ -158,6 +166,7 @@ const FeedPanel = ({ match, setChange }: FeedPanelProps) => {
             <button
               key={index}
               className={`m-1 rounded-lg w-[32.2%] ${option.color}`}
+              onClick={() => typeof option.name === 'number' && setRun(option.name)}
             >
               {option.name}
             </button>
@@ -179,6 +188,7 @@ const FeedPanel = ({ match, setChange }: FeedPanelProps) => {
           <button
             key={index}
             className={`rounded-lg m-1 h-[45%] ${option.color} w-[24.2%]`}
+            onClick={option.name === "Done" ? handleUpdate : () => {}}
           >
             {option.name}
           </button>

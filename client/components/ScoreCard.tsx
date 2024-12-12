@@ -1,8 +1,10 @@
 import { Match } from "@/app/types";
 import Image from "next/image";
+// import { Socket } from "socket.io-client";
 
 interface ScoreCardPanelProps {
     match: Match | undefined;
+    // socket: Socket | null;
 }
 
 
@@ -27,7 +29,7 @@ const ScoreCard = ({match} : ScoreCardPanelProps) => {
                         <Image src="/India.webp" width={50} height={50} alt="team1" className="rounded-2xl"/>
                         <div className="flex flex-col items-center justify-center border-2 px-2 py-1 rounded-lg">
                             <p>{match?.teamA.totalScore} / {match?.teamA.wickets}</p>
-                            <p>Over {match?.teamA.overs}</p>
+                            <p>Over {match?.teamA.overs.toFixed(1)}</p>
                         </div>
                     </div>
                     <p className="font-bold text-red-500 text-lg">vs</p>
@@ -36,7 +38,7 @@ const ScoreCard = ({match} : ScoreCardPanelProps) => {
                         <Image src="/Bangla.png" width={50} height={50} alt="team2" className="rounded-2xl"/>
                         <div className="flex flex-col items-center justify-center border-2 px-2 py-1 rounded-lg">
                             <p>{match?.teamB.totalScore} / {match?.teamB.wickets}</p>
-                            <p>Over {match?.teamB.overs}</p>
+                            <p>Over {match?.teamB.overs.toFixed(1)}</p>
                         </div>
                     </div>
                 </div>
@@ -61,8 +63,8 @@ const ScoreCard = ({match} : ScoreCardPanelProps) => {
                 <tr key={index}>
                     <td>{batsman.name}</td>
                     <td>{batsman.runs}</td>
-                    <td>{batsman.ballsFaced}</td>
-                    <td>{batsman.runs/4}</td>
+                    <td>{batsman.ballsFaced.toFixed(1)}</td>
+                    <td>{batsman.runs}</td>
                 </tr>
             ))}
             </tbody>
@@ -84,7 +86,7 @@ const ScoreCard = ({match} : ScoreCardPanelProps) => {
             {match?.inningBowlers.map((bowler, index) => (
                 <tr key={index}>
                     <td>{bowler.name}</td>
-                    <td>{bowler.oversBowled}</td>
+                    <td>{bowler.oversBowled.toFixed(1)}</td>
                     <td>0</td>
                     <td>{bowler.runsConceded}</td>
                     <td>{bowler.wicketsTaken}</td>
@@ -126,7 +128,7 @@ const ScoreCard = ({match} : ScoreCardPanelProps) => {
             {match?.ballbyball.map((ball, index) => (
                 <div key={index} className="flex flex-row items-center gap-5">
                     <p className={`rounded-full ${ball.runs >= 1 ? 'bg-green-200' : 'bg-gray-300'} w-[40px] h-[40px] flex items-center justify-center font-bold`}>{ball.runs}</p>
-                    <p>{ball.ball}</p>
+                    <p>{(ball.ball/10)%6}</p>
                     <p className="flex flex-wrap w-[61.5%]" dangerouslySetInnerHTML={{ __html: highlightText(ball.description)}}></p>
                     <Image src="/options.svg" width={20} height={20} alt="down arrow" className="cursor-pointer"/>
                 </div>

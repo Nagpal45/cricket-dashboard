@@ -6,6 +6,7 @@ import authRoutes from './routes/auth.route';
 import teamRoutes from './routes/team.route';
 import matchRoutes from './routes/match.route';
 import playerRoutes from './routes/player.route';
+import { Server } from "socket.io";
 
 dotenv.config();
 
@@ -31,6 +32,28 @@ mongoose.connect(mongoUri).then(() => {
 }).catch((error) => {
     console.log('Database connection failed. Error: ', error);
 })
+
+const io = new Server({
+    cors: {
+      origin: "http://localhost:3000",
+    },
+  });
+
+
+  
+io.on("connection", (socket) => {
+    console.log("User connected");
+
+    socket.on("hello", () => {
+      console.log("Hello from client");
+    });
+
+    socket.on("disconnect", () => {
+      console.log("User disconnected");
+    });
+  });
+
+io.listen(4000);
 
 app.listen(5000, () =>{
     console.log('Server is running on port 5000');

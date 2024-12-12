@@ -5,10 +5,15 @@ import ScoreCard from "@/components/ScoreCard";
 import apiRequest from "@/lib/apiRequest";
 import { useEffect, useState } from "react";
 import { Match } from "./types";
+import io from "socket.io-client";
 
 export default function Home() {
   const [match, setMatch] = useState<Match>();
-  const [change, setChange] = useState(false);
+  const [socket, setSocket] = useState<ReturnType<typeof io> | null>(null);
+
+  useEffect(() => {
+    setSocket(io("http://localhost:4000"));
+  }, []);
     
     useEffect(() => {
         const fetchMatch = async () => {
@@ -16,15 +21,14 @@ export default function Home() {
             setMatch(response.data);
         }
         fetchMatch();
-        setChange(false);
-    }, [change]);
+    }, []);
 
   return (
     <>
       <Navbar />
       <div className="flex flex-row w-full h-screen items-center justify-center gap-2 p-2">
-        <FeedPanel match={match} setChange={setChange}/>
-        <ScoreCard match={match}/>
+        <FeedPanel match={match}/>
+        <ScoreCard match={match} />
       </div>
     </>
   );
