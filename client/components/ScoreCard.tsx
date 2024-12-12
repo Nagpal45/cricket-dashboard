@@ -13,6 +13,22 @@ const ScoreCard = ({match} : ScoreCardPanelProps) => {
         return text.replace(/(\d+ runs)|(\d+ run)|(Catch Drop)/gi, (match: string) => `<span>&nbsp;</span><b>${match}</b>`);
     };
 
+    const currentRR = () => {
+        const runs = match?.teamA.totalScore;
+        const overs = match?.teamA.overs;
+        if (overs === undefined || overs <= 0) {
+            return "Overs must be greater than zero.";
+        }
+    
+        const completedOvers = Math.floor(overs); 
+        const balls = (overs - completedOvers) * 10; 
+        const totalOvers = completedOvers + (balls / 6);
+        const runRate = runs !== undefined ? runs / totalOvers : 0;
+    
+        return runRate.toFixed(2); 
+    }
+    
+
     return (
         <div className="w-5/12 h-full rounded-lg bg-gray-200/50 border-2 p-2 px-3 overflow-y-scroll">
             <div className="flex flex-row items-center gap-2">
@@ -43,7 +59,7 @@ const ScoreCard = ({match} : ScoreCardPanelProps) => {
                     </div>
                 </div>
                 <div className="bg-gray-300 py-1.5 px-2 flex justify-center items-center text-sm">
-                    <p className="font-bold">Current R/R : {(match?.teamA.totalScore ?? 0 / (match?.teamA.overs ?? 1)).toFixed(2)}</p>
+                    <p className="font-bold">Current R/R : {currentRR()}</p>
                 </div>
            </div>
            <table className="border-2 mt-2 w-full text-xs text-center">

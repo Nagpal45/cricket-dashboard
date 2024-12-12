@@ -6,6 +6,7 @@ import apiRequest from "@/lib/apiRequest";
 import { useEffect, useState } from "react";
 import { Match } from "./types";
 import io from "socket.io-client";
+import Creation from "@/components/Creation";
 
 export default function Home() {
   const [match, setMatch] = useState<Match>();
@@ -30,7 +31,6 @@ export default function Home() {
             ...prevMatch,
             ...data,
           }));
-          console.log(data);
           
         });
       }
@@ -41,9 +41,14 @@ export default function Home() {
   return (
     <>
       <Navbar />
+        <h1 className="text-4xl font-bold my-5 mt-8 ml-5">Dashboard</h1>
       <div className="flex flex-row w-full h-screen items-center justify-center gap-2 p-2">
         <FeedPanel match={match}/>
         <ScoreCard match={match} />
+      </div>
+      <div className="p-2 flex items-center justify-center flex-col">
+        <h1 className="text-4xl font-bold my-5 mt-10">To Add Data & Create Match to reset all values</h1>
+        <Creation />
       </div>
     </>
   );

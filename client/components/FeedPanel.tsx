@@ -11,6 +11,23 @@ interface FeedPanelProps {
 const FeedPanel = ({ match }: FeedPanelProps) => {
   const [checked, setChecked] = useState(false);
   const[run, setRun] = useState(0);
+  const [message, setMessage] = useState("");
+
+  const commentary = (run: number | undefined) => {
+    if(run === 6){
+      setMessage("6 Runs: That’s massive! A clean hit straight out of the park for six.");
+    } else if(run === 4){
+      setMessage("4 Runs: A delicate flick off the pads, and it’s four runs to the striker.");
+    } else if(run === 3){
+      setMessage("3 Runs: A good running between the wickets, and they get three runs.");
+    } else if(run === 2){
+      setMessage("2 Runs: A good shot, and they run two runs.");
+    } else if(run === 1){
+      setMessage("1 Run: A quick single! The striker rotates the strike beautifully.");
+    } else if(run === 0){
+      setMessage("Dot Ball: No runs scored on that delivery.");
+    }
+  }
 
   const ballOptions = [
     { name: "Ball Start", color: "bg-green-600" },
@@ -53,9 +70,10 @@ const FeedPanel = ({ match }: FeedPanelProps) => {
       matchId: match?.id,
       run: run,
       batsmanId: match?.inningStriker,
-      bowlerId: match?.inningBowlers[1],
+      bowlerId: match?.inningBowlers[match?.inningBowlers.length - 1],
       teamId: match?.teamA,
     });
+    commentary(run);
     console.log(response.data);
   };
 
@@ -137,7 +155,10 @@ const FeedPanel = ({ match }: FeedPanelProps) => {
         </div>
       </div>
       <div className="w-full flex flex-row items-center justify-between">
-        <p className="font-semibold">Score:</p>
+        <p className="font-semibold">Commentary:</p>
+        {checked ? (
+          <p className="text-xl font-bold mt-10">{message}</p>
+        ) : (null)}
         <button className="flex flex-col items-center justify-center border-2 p-1 rounded-lg mt-5">
           <label className="group relative inline-flex cursor-pointer flex-col items-center">
             <input

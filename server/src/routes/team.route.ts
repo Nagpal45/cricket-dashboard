@@ -13,7 +13,7 @@ router.post('/', async (req, res) => {
     try{
         const team = new Team({ name });
         await team.save();
-        res.status(201).json({ message: 'Team created' });
+        res.status(201).json({teamID: team._id});
     }catch(err){
         res.status(500).json({message: "Internal Server Error"});
     }

@@ -12,7 +12,7 @@ router.post('/', async (req, res) => {
     const { name, team } = req.body;
     const player = new Player({ name, team});
     await player.save();
-    res.status(201).json({ message: 'Player created' });
+    res.status(201).json({ playerID: player._id });
 });
 
 export default router;
