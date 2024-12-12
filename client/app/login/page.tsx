@@ -16,9 +16,7 @@ const Login = () => {
     }
     try {
       await apiRequest.post('/auth/login', formData)
-      setTimeout(() => {
         router.push('/');
-    }, 100);
     } catch (error) {
       console.error(error)
     }
