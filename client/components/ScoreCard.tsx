@@ -10,7 +10,7 @@ interface ScoreCardPanelProps {
 
 const ScoreCard = ({match} : ScoreCardPanelProps) => {
     const highlightText = (text:string) => {
-        return text.replace(/(\d+ run.)|(Catch Drop)/gi, (match: string) => `<span>&nbsp;</span><b>${match}</b>`);
+        return text.replace(/(\d+ runs)|(\d+ run)|(Catch Drop)/gi, (match: string) => `<span>&nbsp;</span><b>${match}</b>`);
     };
 
     return (
@@ -43,7 +43,7 @@ const ScoreCard = ({match} : ScoreCardPanelProps) => {
                     </div>
                 </div>
                 <div className="bg-gray-300 py-1.5 px-2 flex justify-center items-center text-sm">
-                    <p className="font-bold">India Won By 133 runs</p>
+                    <p className="font-bold">Current R/R : {(match?.teamA.totalScore ?? 0 / (match?.teamA.overs ?? 1)).toFixed(2)}</p>
                 </div>
            </div>
            <table className="border-2 mt-2 w-full text-xs text-center">
@@ -59,12 +59,12 @@ const ScoreCard = ({match} : ScoreCardPanelProps) => {
             </tr>
             </thead>
             <tbody>
-            {match?.inningBatsman.map((batsman, index) => (
+            {[match?.inningStriker, match?.inningNonStriker].map((batsman, index) => (
                 <tr key={index}>
-                    <td>{batsman.name}</td>
-                    <td>{batsman.runs}</td>
-                    <td>{batsman.ballsFaced.toFixed(1)}</td>
-                    <td>{batsman.runs}</td>
+                    <td>{batsman?.name}</td>
+                    <td>{batsman?.runs}</td>
+                    <td>{batsman?.ballsFaced}</td>
+                    <td>{batsman?.fours}</td>
                 </tr>
             ))}
             </tbody>
@@ -95,7 +95,7 @@ const ScoreCard = ({match} : ScoreCardPanelProps) => {
             </tbody>
            </table>
            <div className="border-2 mt-2 w-full text-xs text-center flex flex-row items-center justify-between py-1 px-2 font-semibold bg-gray-200/50 rounded-md">
-                <p>24 balls</p>
+                <p>{match?.ballbyball.length} balls</p>
                 <div className="flex flex-row gap-1 items-center justify-center">
                     {
                         match?.runs.slice(0,10).map((run, index) => (
@@ -128,7 +128,7 @@ const ScoreCard = ({match} : ScoreCardPanelProps) => {
             {match?.ballbyball.map((ball, index) => (
                 <div key={index} className="flex flex-row items-center gap-5">
                     <p className={`rounded-full ${ball.runs >= 1 ? 'bg-green-200' : 'bg-gray-300'} w-[40px] h-[40px] flex items-center justify-center font-bold`}>{ball.runs}</p>
-                    <p>{(ball.ball/10)%6}</p>
+                    <p>{ball.ball.toFixed(1)}</p>
                     <p className="flex flex-wrap w-[61.5%]" dangerouslySetInnerHTML={{ __html: highlightText(ball.description)}}></p>
                     <Image src="/options.svg" width={20} height={20} alt="down arrow" className="cursor-pointer"/>
                 </div>

@@ -11,14 +11,16 @@ router.get("/", async (req, res) => {
     const teamA = await Team.findById(latestMatch[0].teamA);
     const teamB = await Team.findById(latestMatch[0].teamB);
     const inningBowlersIds = latestMatch[0].inningBowlers.slice(-2);
-    const inningBatsmanIds = latestMatch[0].inningBatsman.slice(-2);
+    const inningStrikerId = latestMatch[0].inningStriker;
+    const inningNonStrikerId = latestMatch[0].inningNonStriker;
     const inningBowlers = await Player.find({ _id: { $in: inningBowlersIds } });
-    const inningBatsman = await Player.find({ _id: { $in: inningBatsmanIds } });
+    const inningStriker = await Player.findById(inningStrikerId);
+    const inningNonStriker = await Player.findById(inningNonStrikerId);
     const ballbyball = latestMatch[0].ballbyball.reverse();
     const runs = ballbyball.map((ball) => ball.runs);
     const teamAPlayers = await Player.find({ team: teamA?._id });
     const teamBPlayers = await Player.find({ team: teamB?._id });
-    res.json({id, teamA, teamB, inningBowlers, inningBatsman, ballbyball, runs, teamAPlayers, teamBPlayers });
+    res.json({id, teamA, teamB, inningBowlers, ballbyball, runs, teamAPlayers, teamBPlayers, inningStriker, inningNonStriker});
 });
 
 router.put("/inningBowlers", async (req, res) => {
@@ -34,13 +36,26 @@ router.put("/inningBowlers", async (req, res) => {
 }
 );
 
-router.put("/inningBatsman", async (req, res) => {
+router.put("/inningStriker", async (req, res) => {
     const { batsmanId, matchId } = req.body;
     const match = await Match.findById(matchId);
     if(match){
-        match.inningBatsman.push(batsmanId);
+        match.inningStriker = batsmanId;
         await match.save();
-        res.json({ message: "Batsman added" });
+        res.json({ message: "Striker updated" });
+    } else {
+        res.status(404).json({ message: "Match not found" });
+    }
+}
+);
+
+router.put("/inningNonStriker", async (req, res) => {
+    const { batsmanId, matchId } = req.body;
+    const match = await Match.findById(matchId);
+    if(match){
+        match.inningNonStriker = batsmanId;
+        await match.save();
+        res.json({ message: "Non Striker updated" });
     } else {
         res.status(404).json({ message: "Match not found" });
     }
@@ -56,8 +71,6 @@ router.put("/updateScore", async (req, res) => {
     const bowlerName = bowler?.name;
     const team = await Team.findById(teamId);
     if(match){
-        match.ballbyball.push({ ball: match.ballbyball.length + 1, runs: run, description: `${bowlerName} to ${batsmanName}: ${run} ${run === 1 ? "run" : "runs"}` });
-
         if(team){
             team.totalScore += run;
             if(team.overs % 1 === 0.6){
@@ -68,6 +81,9 @@ router.put("/updateScore", async (req, res) => {
         }
 
         if(batsman){
+            if(run === 4){
+                batsman.fours += 1;
+            }
             batsman.runs += run;
             batsman.ballsFaced += 1;
             await batsman.save();
@@ -80,12 +96,15 @@ router.put("/updateScore", async (req, res) => {
             }
             bowler.oversBowled = bowler.oversBowled + 0.1;
             await bowler.save();
+            
+            match.ballbyball.push({ ball: bowler.oversBowled, runs: run, description: `${batsmanName} scores ${run} runs against ${bowlerName}` });
         }
 
-        if(run % 2 !== 0){
-            const temp = match.inningBatsman[0];
-            match.inningBatsman[0] = match.inningBatsman[1];
-            match.inningBatsman[1] = temp;
+
+        if(run % 2 !== 0 || (team && team.overs % 1 === 0.6)){
+            const temp = match.inningStriker;
+            match.inningStriker = match.inningNonStriker;
+            match.inningNonStriker = temp;
         }
 
         await match.save();
@@ -95,8 +114,13 @@ router.put("/updateScore", async (req, res) => {
     }
 }
 );
+
 router.post("/", async (req, res) => {
     const { teamA, teamB} = req.body;
+
+    await Team.updateMany({}, { $set: { totalScore: 0, wickets: 0, overs: 0 } });
+    await Player.updateMany({}, { $set: { runs: 0, ballsFaced: 0, wicketsTaken: 0, oversBowled: 0, runsConceded: 0, fours: 0 } });
+
     const match = new Match({
         teamA,
         teamB,

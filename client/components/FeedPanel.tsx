@@ -52,18 +52,22 @@ const FeedPanel = ({ match }: FeedPanelProps) => {
     const response = await apiRequest.put("/match/updateScore", {
       matchId: match?.id,
       run: run,
-      batsmanId: match?.inningBatsman[1],
+      batsmanId: match?.inningStriker,
       bowlerId: match?.inningBowlers[1],
       teamId: match?.teamA,
     });
     console.log(response.data);
   };
 
+  const handleStrikerChange = async (value: string) => {
+    await apiRequest.put("/match/inningStriker", {
+      batsmanId: value,
+      matchId: match?.id,
+    });
+  };
 
-  const handleBatsmanChange = async (value: string) => {
-    console.log(match?.id);
-    
-    await apiRequest.put("/match/inningBatsman", {
+  const handleNonStrikerChange = async (value: string) => {
+    await apiRequest.put("/match/inningNonStriker", {
       batsmanId: value,
       matchId: match?.id,
     });
@@ -86,7 +90,7 @@ const FeedPanel = ({ match }: FeedPanelProps) => {
           <select
             name="striker"
             className="w-[315px] h-[40px] border border-gray-500 rounded-md"
-            onChange={(e) => handleBatsmanChange(e.target.value)}
+            onChange={(e) => handleStrikerChange(e.target.value)}
           >
             <option>Select Batsman</option>
             {match?.teamAPlayers.map((player, index) => (
@@ -108,7 +112,7 @@ const FeedPanel = ({ match }: FeedPanelProps) => {
           <select
             name="nonStriker"
             className="w-[315px] h-[40px] border border-gray-500 rounded-md"
-            onChange={(e) => handleBatsmanChange(e.target.value)}
+            onChange={(e) => handleNonStrikerChange(e.target.value)}
           >
             <option>Select Batsman</option>
             {match?.teamAPlayers.map((player, index) => (

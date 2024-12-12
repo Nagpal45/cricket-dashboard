@@ -10,6 +10,8 @@ const playerSchema = new mongoose.Schema({
     wicketsTaken: { type: Number, default: 0 },
     oversBowled: { type: Number, default: 0 },
     runsConceded: { type: Number, default: 0 },
+    maidenOvers: { type: Number, default: 0 },
+    fours: { type: Number, default: 0 },
 }, { timestamps: true });
 
 export default mongoose.model("Player", playerSchema);

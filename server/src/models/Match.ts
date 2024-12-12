@@ -5,7 +5,8 @@ const matchSchema = new mongoose.Schema({
   teamA: { type: Schema.Types.ObjectId, ref: "Team", required: true },
   teamB: { type: Schema.Types.ObjectId, ref: "Team", required: true },
   inningBowlers : { type: [Schema.Types.ObjectId], ref: "Player" , default: []},
-  inningBatsman: { type: [Schema.Types.ObjectId], ref: "Player" , default: []},
+  inningStriker: { type: Schema.Types.ObjectId, ref: "Player"},
+  inningNonStriker: { type: Schema.Types.ObjectId, ref: "Player"},
   ballbyball : {
     type: [
       {
