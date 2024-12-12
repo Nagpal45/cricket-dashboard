@@ -4,7 +4,6 @@ import { jwtVerify } from 'jose';
 
 export async function middleware(request: NextRequest) {
     const token = request.cookies.get('token');
-    console.log("Token received in middleware:", token); // Debug log
     if (!token) {
         return NextResponse.redirect(new URL('/login', request.url));
     }
@@ -20,14 +19,13 @@ export async function middleware(request: NextRequest) {
             throw new Error('Invalid token');
         }
 
-        console.log("Token verified successfully"); // Debug log
-        return NextResponse.next();
+        const response = NextResponse.next();
+        return response;
     } catch (error) {
-        console.error("Error in middleware:", error); // Debug log
+        console.log(error);
         return NextResponse.redirect(new URL('/login', request.url));
     }
 }
-
 
 export const config = {
     matcher: ['/'],
