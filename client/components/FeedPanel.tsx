@@ -1,8 +1,13 @@
 "use client";
+import { Match } from "@/app/types";
 import Image from "next/image";
 import { useState } from "react";
 
-const FeedPanel = () => {
+interface FeedPanelProps {
+  match: Match | undefined;
+}
+
+const FeedPanel = ({ match }: FeedPanelProps) => {
   const [checked, setChecked] = useState(false);
 
   const ballOptions = [
@@ -52,7 +57,10 @@ const FeedPanel = () => {
             name="striker"
             className="w-[315px] h-[40px] border border-gray-500 rounded-md"
           >
-            <option>Select Batsman</option>
+            <option disabled>Select Batsman</option>
+            {match?.teamAPlayers.map((player, index) => (
+              <option key={index}>{player.name}</option>
+            ))}
           </select>
         </div>
         <Image
@@ -70,7 +78,10 @@ const FeedPanel = () => {
             name="nonStriker"
             className="w-[315px] h-[40px] border border-gray-500 rounded-md"
           >
-            <option>Select Batsman</option>
+            <option disabled>Select Batsman</option>
+            {match?.teamAPlayers.map((player, index) => (
+              <option key={index}>{player.name}</option>
+            ))}
           </select>
         </div>
         <div className="flex flex-col gap-2">
@@ -81,7 +92,10 @@ const FeedPanel = () => {
             name="bowler"
             className="w-[315px] h-[40px] border border-gray-500 rounded-md"
           >
-            <option>Select Batsman</option>
+            <option disabled>Select Bowler</option>
+            {match?.teamBPlayers.map((player, index) => (
+              <option key={index}>{player.name}</option>
+            ))}
           </select>
         </div>
       </div>

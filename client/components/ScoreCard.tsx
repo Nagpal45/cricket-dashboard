@@ -1,18 +1,12 @@
+import { Match } from "@/app/types";
 import Image from "next/image";
 
-const ScoreCard = () =>{
+interface ScoreCardPanelProps {
+    match: Match | undefined;
+}
 
-    const runs = [1, 1, 0, 1, 1, 4, 1, 1, 0, 0, 4, 0, 0, 4]
 
-    const ballDesc = [
-        {run: 1, over: "19.6" , desc: "Nitish Kumar Reddy to Tanzim Hasan Redddy: 1 run."},
-        {run: 4, over: "19.5" , desc: "Nitish Kumar Reddy to Towhid Hridoy Redddy: 1 run. Catch Drop."},
-        {run: 0, over: "19.4" , desc: "Nitish Kumar Reddy to Towhid Hridoy: 0 run."},
-        {run: 1, over: "19.3" , desc: "Nitish Kumar Reddy to Tanzim Hasan Redddy: 1 run."},
-        {run: 0, over: "19.2" , desc: "Nitish Kumar Reddy to Tanzim Hasan Redddy: 1 run."},
-        {run: 4, over: "19.1" , desc: "Nitish Kumar Reddy to Towhid Hridoy Redddy: 1 run. Catch Drop."},
-    ]
-
+const ScoreCard = ({match} : ScoreCardPanelProps) => {
     const highlightText = (text:string) => {
         return text.replace(/(\d+ run.)|(Catch Drop)/gi, (match: string) => `<span>&nbsp;</span><b>${match}</b>`);
     };
@@ -29,25 +23,25 @@ const ScoreCard = () =>{
                 </div>
                 <div className="py-2 px-2 flex flex-row justify-center items-center gap-20 text-sm">
                     <div className="flex flex-col items-center justify-center gap-2">
-                        <p>IND</p>
-                        <Image src="/India.webp" width={50} height={50} alt="India" className="rounded-2xl"/>
+                        <p>{match?.teamA.name}</p>
+                        <Image src="/India.webp" width={50} height={50} alt="team1" className="rounded-2xl"/>
                         <div className="flex flex-col items-center justify-center border-2 px-2 py-1 rounded-lg">
-                            <p>297 / 6</p>
-                            <p>Over 20.0</p>
+                            <p>{match?.teamA.totalScore} / {match?.teamA.wickets}</p>
+                            <p>Over {match?.teamA.overs}</p>
                         </div>
                     </div>
                     <p className="font-bold text-red-500 text-lg">vs</p>
                     <div className="flex flex-col items-center justify-center gap-2">
-                        <p>BAN</p>
-                        <Image src="/Bangla.png" width={50} height={50} alt="India" className="rounded-2xl"/>
+                        <p>{match?.teamB.name}</p>
+                        <Image src="/Bangla.png" width={50} height={50} alt="team2" className="rounded-2xl"/>
                         <div className="flex flex-col items-center justify-center border-2 px-2 py-1 rounded-lg">
-                            <p>164 / 7 *</p>
-                            <p>Over 20.0</p>
+                            <p>{match?.teamB.totalScore} / {match?.teamB.wickets}</p>
+                            <p>Over {match?.teamB.overs}</p>
                         </div>
                     </div>
                 </div>
                 <div className="bg-gray-300 py-1.5 px-2 flex justify-center items-center text-sm">
-                    <button className="font-bold">India Won By 133 runs</button>
+                    <p className="font-bold">India Won By 133 runs</p>
                 </div>
            </div>
            <table className="border-2 mt-2 w-full text-xs text-center">
@@ -63,18 +57,14 @@ const ScoreCard = () =>{
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td>Tanzim Hasan Sakib*</td>
-                <td>8</td>
-                <td>8</td>
-                <td>1</td>
-            </tr>
-            <tr>
-                <td>Towhid Hridoy</td>
-                <td>63</td>
-                <td>42</td>
-                <td>5</td>
-            </tr>
+            {match?.inningBatsman.map((batsman, index) => (
+                <tr key={index}>
+                    <td>{batsman.name}</td>
+                    <td>{batsman.runs}</td>
+                    <td>{batsman.ballsFaced}</td>
+                    <td>{batsman.runs/4}</td>
+                </tr>
+            ))}
             </tbody>
            </table>
            <table className="border-2 mt-2 w-full text-xs text-center">
@@ -91,27 +81,22 @@ const ScoreCard = () =>{
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td>Nitish Kumar Reddy*</td>
-                <td>3.0</td>
-                <td>0</td>
-                <td>31</td>
-                <td>1</td>
-            </tr>
-            <tr>
-                <td>Mayank Yadav</td>
-                <td>4.0</td>
-                <td>0</td>
-                <td>32</td>
-                <td>2</td>
-            </tr>
+            {match?.inningBowlers.map((bowler, index) => (
+                <tr key={index}>
+                    <td>{bowler.name}</td>
+                    <td>{bowler.oversBowled}</td>
+                    <td>0</td>
+                    <td>{bowler.runsConceded}</td>
+                    <td>{bowler.wicketsTaken}</td>
+                </tr>
+            ))}
             </tbody>
            </table>
            <div className="border-2 mt-2 w-full text-xs text-center flex flex-row items-center justify-between py-1 px-2 font-semibold bg-gray-200/50 rounded-md">
                 <p>24 balls</p>
                 <div className="flex flex-row gap-1 items-center justify-center">
                     {
-                        runs.slice(0,10).map((run, index) => (
+                        match?.runs.slice(0,10).map((run, index) => (
                             <div key={index} className="border-2 px-2 py-0.5 rounded-lg bg-gray-300">
                                 <p>{run}</p>
                             </div>
@@ -125,7 +110,8 @@ const ScoreCard = () =>{
            </div>
            <div className="flex flex-row w-full mt-2 gap-1 text-sm">
                     <select className="h-[40px] w-full border-2 rounded-md px-2">
-                        <option value="1">Bangladesh</option>
+                        <option value="teamA">{match?.teamA.name}</option>
+                        <option value="teamB">{match?.teamB.name}</option> 
                     </select>
                     <select className="h-[40px] w-full border-2 rounded-md px-2">
                         <option value="1">1</option>
@@ -137,11 +123,11 @@ const ScoreCard = () =>{
             <button className="bg-red-500 text-white px-4 border-2 rounded-md">X</button>
            </div>
            <div className="flex flex-col text-xs mt-2 gap-2">
-            {ballDesc.map((ball, index) => (
+            {match?.ballbyball.map((ball, index) => (
                 <div key={index} className="flex flex-row items-center gap-5">
-                    <p className={`rounded-full ${ball.run >= 1 ? 'bg-green-200' : 'bg-gray-300'} w-[40px] h-[40px] flex items-center justify-center font-bold`}>{ball.run}</p>
-                    <p>{ball.over}</p>
-                    <p className="flex flex-wrap w-[61.5%]" dangerouslySetInnerHTML={{ __html: highlightText(ball.desc)}}></p>
+                    <p className={`rounded-full ${ball.runs >= 1 ? 'bg-green-200' : 'bg-gray-300'} w-[40px] h-[40px] flex items-center justify-center font-bold`}>{ball.runs}</p>
+                    <p>{ball.ball}</p>
+                    <p className="flex flex-wrap w-[61.5%]" dangerouslySetInnerHTML={{ __html: highlightText(ball.description)}}></p>
                     <Image src="/options.svg" width={20} height={20} alt="down arrow" className="cursor-pointer"/>
                 </div>
             ))}

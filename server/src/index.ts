@@ -1,8 +1,11 @@
 import express from 'express';
 import cors from 'cors';
-import authRoutes from './routes/auth.route';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import authRoutes from './routes/auth.route';
+import teamRoutes from './routes/team.route';
+import matchRoutes from './routes/match.route';
+import playerRoutes from './routes/player.route';
 
 dotenv.config();
 
@@ -14,6 +17,9 @@ app.use(cors({
 }));
 
 app.use('/api/auth', authRoutes);
+app.use('/api/team', teamRoutes);
+app.use('/api/match', matchRoutes);
+app.use('/api/player', playerRoutes);
 
 const mongoUri = process.env.MONGO_URI;
 if (!mongoUri) {
