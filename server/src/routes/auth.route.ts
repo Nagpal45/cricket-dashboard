@@ -29,9 +29,7 @@ router.post('/login', async (req, res) : Promise<any> => {
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'none',
-            maxAge: 3600 * 1000,
-            path: '/',
+            sameSite: 'strict'
         });
 
         const response = res.status(200).json({ message: 'Logged in' });
